@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="../styles/login.css">
+
+    <script src="../scripts/login.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <label for="email">Email:</label>
+        <input type="email" id="email" oninput="validateForm()" required>
+
+        <label for="password">Password:</label>
+        <div class="password-container">
+            <input type="password" id="password" oninput="validateForm()" required>
+            <span class="password-toggle-btn" id="passwordToggleBtn" onclick="togglePassword()">Show</span>
+        </div>
+
+        <button id="loginButton" disabled>Login</button>
+
+        <div class="register-link">
+            <a href="registerPage.html">Register</a> | <a href="forgotPasswordPage.html">Forgot Password</a>
+        </div>
+    </div>
+
+</body>
+</html>

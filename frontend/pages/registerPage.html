@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="../styles/register.css">
+
+    <script src="../scripts/register.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <label for="email">Email:</label>
+        <input type="email" id="email" oninput="validateForm()" required>
+
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" oninput="validateForm()" required>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" oninput="validateForm()" required>
+
+        <label for="password">Password:</label>
+        <div class="password-container">
+            <input type="password" id="password" oninput="validateForm()" required>
+            <span class="password-toggle-btn" onclick="togglePassword('password', 'passwordToggleBtn1')">Show</span>
+        </div>
+
+        <label for="repeatPassword">Repeat Password:</label>
+        <div class="password-container">
+            <input type="password" id="repeatPassword" oninput="validateForm()" required>
+            <span class="password-toggle-btn" onclick="togglePassword('repeatPassword', 'passwordToggleBtn2')">Show</span>
+        </div>
+
+        <button id="registerButton" disabled>Register</button>
+
+        <div class="login-link">
+            <p>Already have an account? <a href="#" onclick="goToLoginPage()">Login</a></p>
+        </div>
+    </div>
+
+</body>
+</html>

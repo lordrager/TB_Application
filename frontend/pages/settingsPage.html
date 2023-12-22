@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="../styles/settings.css">
+
+    <script src="../scripts/settings.js"></script>
+</head>
+<body>
+
+    <h1>Settings</h1>
+
+    <h2>Change Password</h2>
+    <label for="newPassword">New Password:</label>
+    <input type="password" id="newPassword" required>
+    <button onclick="updatePassword()">Update Password</button>
+
+    <h2>Update Profile</h2>
+    <label for="newEmail">New Email:</label>
+    <input type="email" id="newEmail" required>
+    
+    <label for="newFirstName">New First Name:</label>
+    <input type="text" id="newFirstName" required>
+
+    <label for="newLastName">New Last Name:</label>
+    <input type="text" id="newLastName" required>
+
+    <button onclick="updateProfile()">Update Profile</button>
+
+    <h2>Delete Account</h2>
+    <p>Warning: Deleting your account is irreversible.</p>
+    <button class="delete-account" onclick="deleteAccount()">Delete Account</button>
+
+</body>
+</html>
+
