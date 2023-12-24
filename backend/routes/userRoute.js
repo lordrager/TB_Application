@@ -49,7 +49,7 @@ exports.userLogin = (req, res, next) => {
     }
 };
 
-exports.userRegister = (req, res) => {
+exports.userRegister = (req, res, next) => {
   if (req.method === 'POST') {
     let body = '';
     req.on('data', chunk => {
@@ -97,7 +97,7 @@ exports.userRegister = (req, res) => {
 };
 
 
-exports.userForgotPassword = (req, res) => {
+exports.userForgotPassword = (req, res, next) => {
   if (req.method === 'POST') {
     let body = '';
     req.on('data', chunk => {
@@ -123,7 +123,7 @@ exports.userForgotPassword = (req, res) => {
   }).catch(err => console.log(err));
 };
 
-exports.userDeleteAccount = (req, res) => {
+exports.userDeleteAccount = (req, res, next) => {
   if (req.method === 'DELETE') {
     let body = '';
     req.on('data', (chunk) => {
@@ -146,7 +146,7 @@ exports.userDeleteAccount = (req, res) => {
   }
 };
 
-exports.userUpdateUser = (req, res) => {
+exports.userUpdateUser = (req, res, next) => {
   if (req.method === 'PUT') {
     let body = '';
     req.on('data', (chunk) => {
@@ -165,12 +165,14 @@ exports.userUpdateUser = (req, res) => {
       bcrypt
       .hash(password, saltRounds)
       .then(hash => {
-        console.log('Hash ', hash);
         User.updateById(id, email, password, firstName, lastName).then(() => {
           res.writeHead(200, { 'Content-Type': 'text/plain' });
           res.end('Account updated');
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          res.writeHead(400, { 'Content-Type': 'text/plain' });
+          res.end('The data is invalid');
+        });
       })
       .catch(err => console.error(err.message));
     });

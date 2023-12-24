@@ -17,16 +17,16 @@ const server = http.createServer((req, res, next) => {
       userLogin(req, res, next);
       break;
     case '/register':
-      userRegister(req, res);
+      userRegister(req, res, next);
       break;
     case '/forgot-password':
-      userForgotPassword(req, res);
+      userForgotPassword(req, res, next);
       break;
     case '/delete-account':
-      userDeleteAccount(req, res);
+      userDeleteAccount(req, res, next);
       break;
     case '/upadate-user':
-      userUpdateUser(req, res);
+      userUpdateUser(req, res, next);
       break;
     default:
       // Handle unknown routes
