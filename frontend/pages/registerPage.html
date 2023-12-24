@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/register.css">
 
     <script src="../scripts/register.js"></script>
+    <script src="../controllers/userController.js"></script>
 </head>
 <body>
 
@@ -32,7 +33,7 @@
             <span class="password-toggle-btn" onclick="togglePassword('repeatPassword', 'passwordToggleBtn2')">Show</span>
         </div>
 
-        <button id="registerButton" disabled>Register</button>
+        <button id="registerButton" onclick="register()" disabled>Register</button>
 
         <div class="login-link">
             <p>Already have an account? <a href="#" onclick="goToLoginPage()">Login</a></p>

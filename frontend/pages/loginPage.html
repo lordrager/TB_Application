@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/login.css">
 
     <script src="../scripts/login.js"></script>
+    <script src="../controllers/userController.js"></script>
 </head>
 <body>
 
@@ -20,7 +21,7 @@
             <span class="password-toggle-btn" id="passwordToggleBtn" onclick="togglePassword()">Show</span>
         </div>
 
-        <button id="loginButton" disabled>Login</button>
+        <button id="loginButton" onclick="login()" disabled>Login</button>
 
         <div class="register-link">
             <a href="registerPage.html">Register</a> | <a href="forgotPasswordPage.html">Forgot Password</a>

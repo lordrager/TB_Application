@@ -21,3 +21,7 @@ function validateForm() {
 
     loginButton.disabled = !(isEmailValid && isPasswordValid);
 }
+
+function goToLoggedUserPage() {
+    window.location.href = 'loggedUserPage.html';
+}

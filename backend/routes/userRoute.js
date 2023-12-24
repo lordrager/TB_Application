@@ -1,4 +1,11 @@
 const querystring = require('querystring');
+const User = require('../models/userModel');
+const bcrypt = require("bcrypt");
+const { emailVerification } = require('../utils/userUtil');
+
+
+//These "routes" are equivalent to controllers in express
+//They are used to handle basic CRUD operations on the database
 
 exports.userLogin = (req, res, next) => {
     if (req.method === 'POST') {
@@ -7,61 +14,174 @@ exports.userLogin = (req, res, next) => {
         body += chunk;
       });
   
-      req.on('end', () => {
-        const postData = querystring.parse(body);
-        const email = postData.email;
-        const password = postData.password;
-  
-        // Check if the user exists and the password is correct
-        if (users[email] && users[email].password === password) {
-          res.writeHead(200, { 'Content-Type': 'text/plain' });
-          res.end('Login successful');
-        } else {
-          res.writeHead(401, { 'Content-Type': 'text/plain' });
-          res.end('Invalid username or password');
-        }
+      req.on('end', async () => {
+        req.rawBody = body;
+        req.jsonBody = JSON.parse(body);
+        const email = req.jsonBody.email;
+        const password = req.jsonBody.password;
+        const saltRounds = 10;
+
+        bcrypt
+        .hash(password, saltRounds)
+        .then(hash => {
+          User.findByEmail(email)
+          .then(([user]) => {
+            if (user) {
+              if (user[0].password === hash) {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end('Login successful');
+              } else {
+                res.writeHead(401, { 'Content-Type': 'text/plain' });
+                res.end('Invalid username or password');
+              }
+            } else { 
+              res.writeHead(401, { 'Content-Type': 'text/plain' });
+              res.end('Invalid username or password');
+            }
+          })
+          .catch(err => console.log(err));
+        })
+        .catch(err => console.error(err.message));
       });
     } else {
-      // Handle invalid HTTP method
       res.writeHead(405, { 'Content-Type': 'text/plain' });
       res.end('Method Not Allowed');
     }
 };
 
-exports.userRegister = (req, res, next) => {
-    if (req.method === 'POST') {
-      let body = '';
-      req.on('data', (chunk) => {
-        body += chunk;
-      });
-  
-      req.on('end', () => {
-        const postData = querystring.parse(body);
-        const username = postData.username;
-        const password = postData.password;
-        const email = postData.email;
-        const firstName = postData.firstName;
-        const lastName = postData.lastName;
-  
-        // Check if the user already exists
-        if (users[username]) {
+exports.userRegister = (req, res) => {
+  if (req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+    });
+
+    req.on('end', () => {
+      req.rawBody = body;
+      req.jsonBody = JSON.parse(body);
+      const password = req.jsonBody.password;
+      const email = req.jsonBody.email;
+      const firstName = req.jsonBody.firstName;
+      const lastName = req.jsonBody.lastName;
+      const saltRounds = 10;
+
+      User.findByEmail(email)
+      .then(([user]) => {
+        if (user[0].email===email) {
           res.writeHead(400, { 'Content-Type': 'text/plain' });
-          res.end('Username already exists');
-        } else {
-          // Create the user
-          users[username] = { password, email, firstName, lastName };
-  
-          res.writeHead(200, { 'Content-Type': 'text/plain' });
-          res.end('Registration successful');
+          res.end('Email already exists');
         }
-      });
-    } else {
-      // Handle invalid HTTP method
-      res.writeHead(405, { 'Content-Type': 'text/plain' });
-      res.end('Method Not Allowed');
-    }
+        else {
+          bcrypt
+          .hash(password, saltRounds)
+          .then(hash => {
+            const newUser = new User(null, email, hash, firstName, lastName);
+            newUser.save().then(() => {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end('Registration successful');
+            })
+            .catch(err => {
+              res.writeHead(400, { 'Content-Type': 'text/plain' });
+              res.end('The data is invalid');
+            });
+          })
+          .catch(err => console.error(err.message));
+        }
+      })
+      .catch(err => console.log(err));
+    });
+  } else {
+    res.writeHead(405, { 'Content-Type': 'text/plain' });
+    res.end('Method Not Allowed');
+  }
 };
 
-exports.userForgotPassword = (req, res, next) => {
-  // TODO: Implement this function
+
+exports.userForgotPassword = (req, res) => {
+  if (req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+    });
+
+    req.on('end', () => {
+      req.rawBody = body;
+      req.jsonBody = JSON.parse(body);
+      const email = req.jsonBody.email;
+      emailVerification(email).then(() => {
+        console.log('Email sent');
+      })
+      .catch(err => console.log(err));
+
+    });
+  } else {
+    res.writeHead(405, { 'Content-Type': 'text/plain' });
+    res.end('Method Not Allowed');
+  }
+  emailVerification(req.body.email).then(() => {
+    console.log('Email sent');
+  }).catch(err => console.log(err));
 };
+
+exports.userDeleteAccount = (req, res) => {
+  if (req.method === 'DELETE') {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+
+    req.on('end', () => {
+      const postData = querystring.parse(body);
+      const id = postData.id;
+
+      User.deleteById(id).then(() => {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('Account deleted');
+      })
+      .catch(err => console.log(err));
+    });
+  } else {
+    res.writeHead(405, { 'Content-Type': 'text/plain' });
+    res.end('Method Not Allowed');
+  }
+};
+
+exports.userUpdateUser = (req, res) => {
+  if (req.method === 'PUT') {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+
+    req.on('end', () => {
+      req.rawBody = body;
+      req.jsonBody = JSON.parse(body);
+      const id = req.jsonBody.id;
+      const email = req.jsonBody.email;
+      const password = req.jsonBody.password;
+      const firstName = req.jsonBody.firstName;
+      const lastName = req.jsonBody.lastName;
+      const saltRounds = 10;
+      bcrypt
+      .hash(password, saltRounds)
+      .then(hash => {
+        console.log('Hash ', hash);
+        User.updateById(id, email, password, firstName, lastName).then(() => {
+          res.writeHead(200, { 'Content-Type': 'text/plain' });
+          res.end('Account updated');
+        })
+        .catch(err => console.log(err));
+      })
+      .catch(err => console.error(err.message));
+    });
+  } else {
+    res.writeHead(405, { 'Content-Type': 'text/plain' });
+    res.end('Method Not Allowed');
+  }
+};
+
+// exports.test = (req, res) => {
+//   res.writeHead(200, { 'Content-Type': 'text/plain' });
+//   res.write('Test successful');
+//   res.end('Test successful');
+// };

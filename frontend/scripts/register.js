@@ -26,10 +26,11 @@ function validateForm() {
         passwordInput.value === '' ||
         repeatPasswordInput.value === ''
     );
+    const passwordEqual = ( passwordInput.value === repeatPasswordInput.value);
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
+    const isPasswordValid = passwordInput.value.length >= 4;
 
-    const passwordEqual = ( passwordInput === repeatPasswordInput);
-
-    registerButton.disabled = areFieldsEmpty && passwordEqual;
+    registerButton.disabled = !(isEmailValid && isPasswordValid && passwordEqual &&!areFieldsEmpty);
 }
 
 function goToLoginPage() {
