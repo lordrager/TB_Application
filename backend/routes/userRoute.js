@@ -21,27 +21,25 @@ exports.userLogin = (req, res, next) => {
         const password = req.jsonBody.password;
         const saltRounds = 10;
 
-        bcrypt
-        .hash(password, saltRounds)
-        .then(hash => {
-          User.findByEmail(email)
-          .then(([user]) => {
-            if (user) {
-              if (user[0].password === hash) {
+        User.findByEmail(email)
+        .then(([user]) => {
+          if (user) {
+            bcrypt.compare(password, user[0].password).then(result => {
+              if (result) {
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
                 res.end('Login successful');
               } else {
                 res.writeHead(401, { 'Content-Type': 'text/plain' });
                 res.end('Invalid username or password');
               }
-            } else { 
-              res.writeHead(401, { 'Content-Type': 'text/plain' });
-              res.end('Invalid username or password');
-            }
-          })
-          .catch(err => console.log(err));
+            })
+            .catch(err => console.log(err));
+          } else { 
+            res.writeHead(401, { 'Content-Type': 'text/plain' });
+            res.end('Invalid username or password');
+          }
         })
-        .catch(err => console.error(err.message));
+        .catch(err => console.log(err));
       });
     } else {
       res.writeHead(405, { 'Content-Type': 'text/plain' });
